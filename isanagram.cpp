@@ -16,3 +16,16 @@ public:
   return true;
     }
 };
+bool isanagram(string str1,str2)
+{
+    if(str1.length()!=str2.length())
+    retunr fdalse;
+    sort(str1.begin(),str1.end());
+    sort(str2.begin(),str2.end());
+    int i;
+    for)i=0;i<str1.len;i++|)
+    if(str1[i]!=str2[i])
+    return false;
+    return true;
+
+}
