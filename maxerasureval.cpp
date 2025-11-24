@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int maximumUniqueSubarray(vector<int>& nums) {
+        
+     unordered_set<int> seen;
+        int left = 0;
+        int currentSum = 0;
+        int maxSum = 0;
+
+        for (int right = 0; right < nums.size(); right++) {
+            while (seen.count(nums[right])) {
+                seen.erase(nums[left]);
+                currentSum -= nums[left];
+                left++;
+            }
+            seen.insert(nums[right]);
+            currentSum += nums[right];
+            maxSum = max(maxSum, currentSum);
+        }
+
+        return maxSum;
+    }
+};
