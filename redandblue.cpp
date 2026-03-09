@@ -3,6 +3,7 @@ using namespace std;
 
 int main()
 {
+
     int t;
     cin >> t;
 
@@ -10,31 +11,56 @@ int main()
     {
         int n;
         cin >> n;
-        vector<int> r(n);
-        for (int i = 0; i < n; i++)
+        vector<int> r(n + 1);
+        for (int i = 1; i <= n; i++)
             cin >> r[i];
 
         int m;
         cin >> m;
-        vector<int> b(m);
-        for (int i = 0; i < m; i++)
+        vector<int> b(m + 1);
+        for (int i = 1; i <= m; i++)
             cin >> b[i];
-        vector<int> all;
-        for (int x : r)
-            all.push_back(x);
-        for (int x : b)
-            all.push_back(x);
-        sort(all.begin(), all.end(), greater<int>());
 
-        int f = 0;
-        int prefSum = 0;
-        for (int x : all)
+        vector<vector<int>> curr(n + 1, vector<int>(m + 1, INT_MIN));
+        vector<vector<int>> best(n + 1, vector<int>(m + 1, INT_MIN));
+
+        curr[0][0] = 0;
+        best[0][0] = 0;
+
+        for (int i = 0; i <= n; i++)
         {
-            prefSum += x;
-            f = max(f, prefSum);
+            for (int j = 0; j <= m; j++)
+            {
+                if (curr[i][j] == INT_MIN)
+                    continue;
+
+                if (i + 1 <= n)
+                {
+                    int newCurr = curr[i][j] + r[i + 1];
+                    int newBest = max(best[i][j], newCurr);
+                    if (newBest > best[i + 1][j] ||
+                        (newBest == best[i + 1][j] && newCurr > curr[i + 1][j]))
+                    {
+                        curr[i + 1][j] = newCurr;
+                        best[i + 1][j] = newBest;
+                    }
+                }
+
+                if (j + 1 <= m)
+                {
+                    int newCurr = curr[i][j] + b[j + 1];
+                    int newBest = max(best[i][j], newCurr);
+                    if (newBest > best[i][j + 1] ||
+                        (newBest == best[i][j + 1] && newCurr > curr[i][j + 1]))
+                    {
+                        curr[i][j + 1] = newCurr;
+                        best[i][j + 1] = newBest;
+                    }
+                }
+            }
         }
 
-        cout << f << "\n";
+        cout << best[n][m] << "\n";
     }
 
     return 0;
