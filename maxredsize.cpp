@@ -1,25 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int solve(vector<int> &a, vector<bool> &blocked, int idx, bool last_red, int max_val)
-{
-    int n = a.size();
-    if (idx == n)
-        return 0;
-
-    // Don't pick
-    int not_pick = solve(a, blocked, idx + 1, false, max_val);
-
-    // Pick
-    int pick = 0;
-    if (!last_red && !blocked[idx] && a[idx] <= max_val)
-    {
-        pick = 1 + solve(a, blocked, idx + 1, true, max_val);
-    }
-
-    return max(pick, not_pick);
-}
-
 int main()
 {
 
@@ -38,15 +19,33 @@ int main()
 
         for (int i = 0; i < n; i++)
         {
-            vector<bool> blocked(n, false);
-            blocked[i] = true;
-            if (i > 0)
-                blocked[i - 1] = true;
-            if (i < n - 1)
-                blocked[i + 1] = true;
+            // a[i] the max red element
+            // dp[j][0] = max reds in a[0..j] where j is NOT red
+            // dp[j][1] = max reds in a[0..j] where j IS red
 
-            int cnt = 1 + solve(a, blocked, 0, false, a[i]);
-            ans = max(ans, a[i] + cnt);
+            vector<array<int, 2>> dp(n, {0, -1});
+
+            dp[0][0] = 0;
+            // can pick
+            if (i != 0 && i != 1 && a[0] <= a[i])
+                dp[0][1] = 1;
+
+            for (int j = 1; j < n; j++)
+            {
+                // Don't pick j
+                dp[j][0] = max(dp[j - 1][0], dp[j - 1][1]);
+
+                bool blocked = (j == i || j == i - 1 || j == i + 1 || a[j] > a[i]);
+                if (!blocked)
+                {
+                    if (dp[j - 1][0] != -1)
+                        dp[j][1] = dp[j - 1][0] + 1;
+                }
+            }
+
+            int free_reds = max(dp[n - 1][0], dp[n - 1][1]);
+
+            ans = max(ans, a[i] + 1 + free_reds);
         }
 
         cout << ans << "\n";
